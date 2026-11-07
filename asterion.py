@@ -7,7 +7,7 @@ class Star:
     def __init__(self,mass,luminosity):
         self.mass=mass
         self.luminosity=luminosity
-sun=Star(100,1000)
+
 
 
 class Planet:
@@ -15,18 +15,15 @@ class Planet:
         self.mass=mass
         self.orbital_distance=orbital_distance
         self.starting_angle=starting_angle
-earth=Planet(1,10,34)
-mars=Planet(3,25,30)
 
-l=[earth,mars]
+
+
 
 class System:
     def __init__(self,planets,star):
         self.planets=planets
         self.star=star
-oursystem=System(l,sun)
-print(oursystem.star.mass)
-print(oursystem.planets[0].orbital_distance)
+
 
 
 def generate_system(seed):
