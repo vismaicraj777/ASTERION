@@ -68,10 +68,11 @@ def current_position(oursystem,elapsed_time):
     return position
 
 
-oursystem=generate_system(int(input('Enter a seed:')))        
-elapsed_time=float(input('Enter the elapsed time in days:'))            
-current_position=current_position(oursystem,elapsed_time)
-print(current_position)
-        
+if __name__=="__main__":
+    oursystem=generate_system(int(input('Enter a seed:')))        
+    elapsed_time=float(input('Enter the elapsed time in days:'))            
+    position=current_position(oursystem,elapsed_time)
+    print(position)
+            
 
 
