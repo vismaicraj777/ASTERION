@@ -1,18 +1,29 @@
 from ursina import *   
 from asterion import *
-seed=50
+import random
+seed=random.randint(0,10000000)
 system=generate_system(seed)
 simulation_speed=10
 simulation_elapsed=0
 positions=current_position(system,simulation_elapsed)
 app=Ursina()
+window.color=color.black
 visual_star=Entity(model='sphere',color=color.yellow,scale=(3,3,3),position=(0,0,0))
-visual_planet=[]
-for i in positions:
-    visual_planet.append(Entity(model='sphere',color=color.blue,scale=(1,1,1),position=(i[0]*10,0,i[1]*10)))
 
 
+def create_planets(positions):
+    visual_planet=[]
+    for i in positions:
+        visual_planet.append(Entity(model='sphere',color=color.blue,scale=(1,1,1),position=(i[0]*10,0,i[1]*10)))        
+    return visual_planet
 
+def create_orbits(system):
+    orbit=[]
+    for i in range(len(system.planets)):
+        orbit.append(Entity(model=Circle(mode='line',resolution=100,radius=system.planets[i].orbital_distance*10),color=color.white,position=(0,0,0),rotation=(90,0,0)))
+    return orbit
+orbits=create_orbits(system)
+visual_planet=create_planets(positions)
 
 simulation_paused=False
 def update():
@@ -24,8 +35,13 @@ def update():
             visual_planet[i].position=(position[i][0]*10,0,position[i][1]*10)
 
 def input(key):
+    global seed
+    global system
+    global orbits
+    global visual_planet
     global simulation_paused
     global simulation_speed
+    global simulation_elapsed
     if key=='space':
         simulation_paused=not simulation_paused
     if key=='up arrow':
@@ -35,7 +51,22 @@ def input(key):
             simulation_speed-=1
         else:
             simulation_speed=1
+    if key=='n':
+        simulation_speed=1
+        simulation_elapsed=0
+        seed=random.randint(0,10000000)
+        for i in visual_planet:
+            destroy(i)
+        for i in orbits:
+            destroy(i)
+        
+        system=generate_system(seed)
+        orbits=create_orbits(system)
+        positions=current_position(system,simulation_elapsed)
+        visual_planet=create_planets(positions)
 
 
+
+EditorCamera(rotation_speed=200,zoom_speed=1.25)
 
 app.run()              
