@@ -2,6 +2,7 @@ from ursina import *
 from asterion import *
 from PIL import Image,ImageDraw
 import random
+from pathlib import Path
 seed=random.randint(0,10000000)
 system=generate_system(seed)
 simulation_speed=10
@@ -27,11 +28,17 @@ def create_background_stars(seed):
 
 def create_planets(positions):
     visual_planet=[]
+    path=Path('textures/planets')
+    texture_jpg=list(path.glob('*.jpg'))
+    texture_png=list(path.glob('*.png'))
+    texture_list=texture_jpg+texture_png
     
-    
-    blank_texture=Texture("textures/2k_mars.jpg")
     for i in positions:
-        visual_planet.append(Entity(model='sphere',color=color.white,scale=(system.planets[positions.index(i)].mass**0.27,system.planets[positions.index(i)].mass**0.27,system.planets[positions.index(i)].mass**0.27),position=(i[0]*10,0,i[1]*10),texture=blank_texture))        
+                
+        l=random.choice(texture_list)
+        blank_texture=Texture(l)
+        visual_planet.append(Entity(model='sphere',color=color.white,scale=(system.planets[positions.index(i)].mass**0.27,system.planets[positions.index(i)].mass**0.27,system.planets[positions.index(i)].mass**0.27),position=(i[0]*10,0,i[1]*10),texture=blank_texture))
+        texture_list.remove(l)   
     return visual_planet
 
 def create_orbits(system):

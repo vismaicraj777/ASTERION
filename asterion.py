@@ -4,9 +4,10 @@ import math
 
 
 class Star:
-    def __init__(self,mass,luminosity):
+    def __init__(self,mass,luminosity,temperature):
         self.mass=mass
         self.luminosity=luminosity
+        self.temperature=temperature
 
 
 
@@ -30,7 +31,8 @@ def generate_system(seed):
     random.seed(seed)
     star_mass=random.uniform(0.7,1.3)
     star_luminosity=star_mass**4
-    star=Star(star_mass,star_luminosity)
+    star_temperature=star_mass**0.6
+    star=Star(star_mass,star_luminosity,star_temperature)
     planet_no=random.randint(2,6)
     l=[]
     j,k=0.5,1
