@@ -42,6 +42,7 @@ def input(key):
     global simulation_paused
     global simulation_speed
     global simulation_elapsed
+    global text
     if key=='space':
         simulation_paused=not simulation_paused
     if key=='up arrow':
@@ -64,9 +65,13 @@ def input(key):
         orbits=create_orbits(system)
         positions=current_position(system,simulation_elapsed)
         visual_planet=create_planets(positions)
+        destroy(text)
+        text=Text(text='PLANETARY SYSTEM\nSEED:{}\nSTAR MASS:{}\nPLANET COUNT:{}'.format(seed,system.star.mass,len(system.planets)),position=window.top_left)
+
 
 
 
 EditorCamera(rotation_speed=200,zoom_speed=1.25)
+text=Text(text='PLANETARY SYSTEM\nSEED:{}\nSTAR MASS:{}\nPLANET COUNT:{}'.format(seed,system.star.mass,len(system.planets)),position=window.top_left)
 
 app.run()              
