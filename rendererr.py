@@ -1,5 +1,6 @@
 from ursina import *   
 from asterion import *
+from PIL import Image,ImageDraw
 import random
 seed=random.randint(0,10000000)
 system=generate_system(seed)
@@ -8,13 +9,29 @@ simulation_elapsed=0
 positions=current_position(system,simulation_elapsed)
 app=Ursina()
 window.color=color.black
-visual_star=Entity(model='sphere',color=color.yellow,scale=(3,3,3),position=(0,0,0))
+def create_main_star(system):
+    visual_star=Entity(model='sphere',color=color.yellow,scale=((system.star.mass)**0.8*3,(system.star.mass)**0.8*3,(system.star.mass)**0.8*3),position=(0,0,0))
+    return visual_star
+
+def create_background_stars(seed):
+    stars=[]
+    for i in range(100):
+        x=random.uniform(-1,1)
+        y=random.uniform(-1,1)
+        z=random.uniform(-1,1)
+        length=300/((x**2+y**2+z**2)**0.5)
+    
+        stars.append(Entity(model='sphere',color=color.white,scale=(0.5,0.5,0.5),position=(x*length,y*length,z*length)))
+    return stars    
 
 
 def create_planets(positions):
     visual_planet=[]
+    
+    
+    blank_texture=Texture("textures/2k_mars.jpg")
     for i in positions:
-        visual_planet.append(Entity(model='sphere',color=color.blue,scale=(1,1,1),position=(i[0]*10,0,i[1]*10)))        
+        visual_planet.append(Entity(model='sphere',color=color.white,scale=(system.planets[positions.index(i)].mass**0.27,system.planets[positions.index(i)].mass**0.27,system.planets[positions.index(i)].mass**0.27),position=(i[0]*10,0,i[1]*10),texture=blank_texture))        
     return visual_planet
 
 def create_orbits(system):
@@ -22,8 +39,10 @@ def create_orbits(system):
     for i in range(len(system.planets)):
         orbit.append(Entity(model=Circle(mode='line',resolution=100,radius=system.planets[i].orbital_distance*10),color=color.white,position=(0,0,0),rotation=(90,0,0)))
     return orbit
+star=create_main_star(system)
 orbits=create_orbits(system)
 visual_planet=create_planets(positions)
+background_stars=create_background_stars(seed)
 
 simulation_paused=False
 def update():
@@ -43,6 +62,8 @@ def input(key):
     global simulation_speed
     global simulation_elapsed
     global text
+    global background_stars
+    global star
     if key=='space':
         simulation_paused=not simulation_paused
     if key=='up arrow':
@@ -60,11 +81,16 @@ def input(key):
             destroy(i)
         for i in orbits:
             destroy(i)
+        for i in background_stars:
+            destroy(i)
+        destroy(star)
         
         system=generate_system(seed)
+        star=create_main_star(system)
         orbits=create_orbits(system)
         positions=current_position(system,simulation_elapsed)
         visual_planet=create_planets(positions)
+        background_stars=create_background_stars(seed)
         destroy(text)
         text=Text(text='PLANETARY SYSTEM\nSEED:{}\nSTAR MASS:{}\nPLANET COUNT:{}'.format(seed,system.star.mass,len(system.planets)),position=window.top_left)
 
