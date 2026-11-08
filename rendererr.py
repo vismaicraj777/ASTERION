@@ -11,7 +11,19 @@ positions=current_position(system,simulation_elapsed)
 app=Ursina()
 window.color=color.black
 def create_main_star(system):
-    visual_star=Entity(model='sphere',color=color.yellow,scale=((system.star.mass)**0.8*3,(system.star.mass)**0.8*3,(system.star.mass)**0.8*3),position=(0,0,0))
+    
+    if system.star.temperature <= 0.64:
+        blank_texture=Texture('textures/stars/red.jpeg')
+    elif 0.64<system.star.temperature<=0.90:
+        blank_texture=Texture('textures/stars/orange.jpg')
+    elif 0.90<system.star.temperature<=1.03:
+        blank_texture=Texture('textures/stars/yellow.jpeg')
+    elif 1.03<system.star.temperature<=1.72:
+        blank_texture=Texture('textures/stars/white.jpeg')
+    else:
+        blank_texture=Texture('textures/stars/blue.jpeg')
+
+    visual_star=Entity(model='sphere',color=color.white,scale=((system.star.mass)**0.8*3,(system.star.mass)**0.8*3,(system.star.mass)**0.8*3),position=(0,0,0),texture=blank_texture)
     return visual_star
 
 def create_background_stars(seed):
