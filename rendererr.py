@@ -3,12 +3,26 @@ from asterion import *
 from PIL import Image,ImageDraw
 import random
 from pathlib import Path
-seed=random.randint(0,10000000)
+app=Ursina(window_title='ASTERION')
+text1=Text(text='ASTERION',position=(-0.2,0.35,0),parent=camera.ui,scale=(3,3,3))
+seed_field=InputField(text='',position=(0,0.1,0),limit_content_to='0123456789')
+def button_click():
+
+    if seed_field.text=='':
+        seed=random.randint(0,10000000)
+    else:
+        seed=int(seed_field.text)
+button=Button(text='CREATE PLANETARY SYSTEM',position=(0,0,0),parent=camera.ui,scale=(0.5,0.05,0.05),on_click=button_click)
+
+
+
+
+
 system=generate_system(seed)
 simulation_speed=10
 simulation_elapsed=0
 positions=current_position(system,simulation_elapsed)
-app=Ursina()
+
 window.color=color.black
 def create_main_star(system):
     
