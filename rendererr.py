@@ -23,19 +23,22 @@ def create_main_star(system):
     else:
         blank_texture=Texture('textures/stars/blue.jpeg')
 
+
+
+    
+
     visual_star=Entity(model='sphere',color=color.white,scale=((system.star.mass)**0.8*3,(system.star.mass)**0.8*3,(system.star.mass)**0.8*3),position=(0,0,0),texture=blank_texture)
     return visual_star
 
-def create_background_stars(seed):
-    stars=[]
-    for i in range(100):
-        x=random.uniform(-1,1)
-        y=random.uniform(-1,1)
-        z=random.uniform(-1,1)
-        length=300/((x**2+y**2+z**2)**0.5)
-    
-        stars.append(Entity(model='sphere',color=color.white,scale=(0.5,0.5,0.5),position=(x*length,y*length,z*length)))
-    return stars    
+def create_sky():
+    path=Path('textures/background')
+    texture_jpg=list(path.glob('*.jpg'))
+    texture_png=list(path.glob('*.png'))
+    texture_list=texture_jpg+texture_png
+    l=random.choice(texture_list)
+    blank_texture1=Texture(l)
+    sky=Sky(texture=blank_texture1)
+    return sky
 
 
 def create_planets(positions):
@@ -58,10 +61,11 @@ def create_orbits(system):
     for i in range(len(system.planets)):
         orbit.append(Entity(model=Circle(mode='line',resolution=100,radius=system.planets[i].orbital_distance*10),color=color.white,position=(0,0,0),rotation=(90,0,0)))
     return orbit
+sky=create_sky()
 star=create_main_star(system)
 orbits=create_orbits(system)
 visual_planet=create_planets(positions)
-background_stars=create_background_stars(seed)
+
 
 simulation_paused=False
 def update():
@@ -81,8 +85,9 @@ def input(key):
     global simulation_speed
     global simulation_elapsed
     global text
-    global background_stars
+    global sky
     global star
+    
     if key=='space':
         simulation_paused=not simulation_paused
     if key=='up arrow':
@@ -100,16 +105,16 @@ def input(key):
             destroy(i)
         for i in orbits:
             destroy(i)
-        for i in background_stars:
-            destroy(i)
         destroy(star)
+        destroy(sky)
+
         
         system=generate_system(seed)
         star=create_main_star(system)
         orbits=create_orbits(system)
         positions=current_position(system,simulation_elapsed)
         visual_planet=create_planets(positions)
-        background_stars=create_background_stars(seed)
+        sky=create_sky()
         destroy(text)
         text=Text(text='PLANETARY SYSTEM\nSEED:{}\nSTAR MASS:{}\nPLANET COUNT:{}'.format(seed,system.star.mass,len(system.planets)),position=window.top_left)
 
