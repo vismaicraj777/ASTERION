@@ -7,23 +7,56 @@ app=Ursina(window_title='ASTERION')
 text1=Text(text='ASTERION',position=(-0.2,0.35,0),parent=camera.ui,scale=(3,3,3))
 seed_field=InputField(text='',position=(0,0.1,0),limit_content_to='0123456789')
 
-seed=random.randint(0,10000000)
-#def button_click():
+system=None
 
-#   if seed_field.text=='':
-#        seed=random.randint(0,10000000)
-#    else:
-#        seed=int(seed_field.text)
-#button=Button(text='CREATE PLANETARY SYSTEM',position=(0,0,0),parent=camera.ui,scale=(0.5,0.05,0.05),on_click=button_click)
+simulation_paused=False
+def update():
+    global simulation_elapsed
+    if system!=None:
+        if simulation_paused==False:
+            simulation_elapsed+=time.dt*simulation_speed
+            position=current_position(system,simulation_elapsed)
+            for i in range(len(position)):
+                visual_planet[i].position=(position[i][0]*10,0,position[i][1]*10)
+    else:
+        return
+
+
+def button_click():
+    global seed
+    global system
+    global orbits
+    global visual_planet
+    global simulation_paused
+    global simulation_speed
+    global simulation_elapsed
+    global text
+    global sky
+    global star
+
+    if seed_field.text=='':
+        seed=random.randint(0,10000000)
+    else:
+        seed=int(seed_field.text)
+    system=generate_system(seed)
+    simulation_elapsed=0
+    simulation_speed=10
+    positions=current_position(system,simulation_elapsed)
+    sky=create_sky()
+    star=create_main_star(system)
+    orbits=create_orbits(system)
+    visual_planet=create_planets(positions)
+    text=Text(text='PLANETARY SYSTEM\nSEED:{}\nSTAR MASS:{}\nPLANET COUNT:{}'.format(seed,system.star.mass,len(system.planets)),position=window.top_left)
+    button.enabled=False
+    text1.enabled=False
+    seed_field.enabled=False
+
+
+button=Button(text='CREATE PLANETARY SYSTEM',text_color=color.black,position=(0,0,0),parent=camera.ui,scale=(0.5,0.05,0.05),on_click=button_click,color=color.white)
 
 
 
 
-
-system=generate_system(seed)
-simulation_speed=10
-simulation_elapsed=0
-positions=current_position(system,simulation_elapsed)
 
 window.color=color.black
 def create_main_star(system):
@@ -77,20 +110,9 @@ def create_orbits(system):
     for i in range(len(system.planets)):
         orbit.append(Entity(model=Circle(mode='line',resolution=100,radius=system.planets[i].orbital_distance*10),color=color.white,position=(0,0,0),rotation=(90,0,0)))
     return orbit
-sky=create_sky()
-star=create_main_star(system)
-orbits=create_orbits(system)
-visual_planet=create_planets(positions)
 
 
-simulation_paused=False
-def update():
-    global simulation_elapsed
-    if simulation_paused==False:
-        simulation_elapsed+=time.dt*simulation_speed
-        position=current_position(system,simulation_elapsed)
-        for i in range(len(position)):
-            visual_planet[i].position=(position[i][0]*10,0,position[i][1]*10)
+
 
 def input(key):
     global seed
@@ -114,7 +136,7 @@ def input(key):
         else:
             simulation_speed=1
     if key=='n':
-        simulation_speed=1
+        simulation_speed=10
         simulation_elapsed=0
         seed=random.randint(0,10000000)
         for i in visual_planet:
@@ -138,6 +160,5 @@ def input(key):
 
 
 EditorCamera(rotation_speed=200,zoom_speed=1.25)
-text=Text(text='PLANETARY SYSTEM\nSEED:{}\nSTAR MASS:{}\nPLANET COUNT:{}'.format(seed,system.star.mass,len(system.planets)),position=window.top_left)
 
 app.run()              
