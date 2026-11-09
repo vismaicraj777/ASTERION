@@ -12,10 +12,11 @@ class Star:
 
 
 class Planet:
-    def __init__(self,mass,orbital_distance,starting_angle):
+    def __init__(self,mass,orbital_distance,starting_angle,spin_speed):
         self.mass=mass
         self.orbital_distance=orbital_distance
         self.starting_angle=starting_angle
+        self.spin_speed=spin_speed
 
 
 
@@ -29,18 +30,19 @@ class System:
 
 def generate_system(seed):
     random.seed(seed)
-    star_mass=random.uniform(0.7,1.3)
+    star_mass=random.uniform(0.3,3.0)
     star_luminosity=star_mass**4
     star_temperature=star_mass**0.6
     star=Star(star_mass,star_luminosity,star_temperature)
-    planet_no=random.randint(2,6)
+    planet_no=random.randint(2,8)
     l=[]
     j,k=0.5,1
     for i in range(planet_no):
         planet_mass=random.uniform(0.5,5)
         planet_distance=random.uniform(j,k)
         planet_angle=random.uniform(0,360)
-        planet=Planet(planet_mass,planet_distance,planet_angle)
+        planet_spin_speed=random.uniform(8,30)
+        planet=Planet(planet_mass,planet_distance,planet_angle,planet_spin_speed)
         l.append(planet)
         j=j+1
         k=k+1
@@ -70,11 +72,6 @@ def current_position(oursystem,elapsed_time):
     return position
 
 
-if __name__=="__main__":
-    oursystem=generate_system(int(input('Enter a seed:')))        
-    elapsed_time=float(input('Enter the elapsed time in days:'))            
-    position=current_position(oursystem,elapsed_time)
-    print(position)
-            
+
 
 

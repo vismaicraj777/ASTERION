@@ -18,6 +18,7 @@ def update():
             position=current_position(system,simulation_elapsed)
             for i in range(len(position)):
                 visual_planet[i].position=(position[i][0]*10,0,position[i][1]*10)
+                visual_planet[i].rotation_y+=system.planets[i].spin_speed*simulation_speed*time.dt
     else:
         return
 
