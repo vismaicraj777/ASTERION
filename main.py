@@ -3,9 +3,11 @@ from asterion import *
 from PIL import Image,ImageDraw
 import random
 from pathlib import Path
+
 app=Ursina(window_title='ASTERION')
 text1=Text(text='ASTERION',position=(-0.2,0.35,0),parent=camera.ui,scale=(3,3,3))
-seed_field=InputField(text='',position=(0,0.1,0),limit_content_to='0123456789')
+seed_field=InputField(text='',position=(0,0.1,0),limit_content_to='0123456789',color=color.white)
+sky=Sky(texture="textures/background/7.png")
 
 system=None
 
@@ -34,27 +36,29 @@ def button_click():
     global text
     global sky
     global star
-
-    if seed_field.text=='':
-        seed=random.randint(0,10000000)
-    else:
-        seed=int(seed_field.text)
-    system=generate_system(seed)
     simulation_elapsed=0
     simulation_speed=10
+    if seed_field.text=='':
+        seed=random.randint(0,10000000)
+        destroy(sky)
+        
+    else:
+        seed=int(seed_field.text)
+        destroy(sky)
+    system=generate_system(seed)
+    
     positions=current_position(system,simulation_elapsed)
-    sky=create_sky()
+    sky=create_sky(seed)
     star=create_main_star(system)
     orbits=create_orbits(system)
-    visual_planet=create_planets(positions)
-    text=Text(text='PLANETARY SYSTEM\nSEED:{}\nSTAR MASS:{}\nPLANET COUNT:{}'.format(seed,system.star.mass,len(system.planets)),position=window.top_left)
+    visual_planet=create_planets(positions,seed)
+    text=Text(text='PLANETARY SYSTEM\nSEED:{}\nSTAR MASS(SM):{}\nPLANET COUNT:{}'.format(seed,system.star.mass,len(system.planets)),position=window.top_left)
     button.enabled=False
     text1.enabled=False
     seed_field.enabled=False
 
 
 button=Button(text='CREATE PLANETARY SYSTEM',text_color=color.black,position=(0,0,0),parent=camera.ui,scale=(0.5,0.05,0.05),on_click=button_click,color=color.white)
-
 
 
 
@@ -80,27 +84,28 @@ def create_main_star(system):
     visual_star=Entity(model='sphere',color=color.white,scale=((system.star.mass)**0.8*3,(system.star.mass)**0.8*3,(system.star.mass)**0.8*3),position=(0,0,0),texture=blank_texture)
     return visual_star
 
-def create_sky():
+def create_sky(seed):
+    sky_rng=random.Random(seed)
     path=Path('textures/background')
     texture_jpg=list(path.glob('*.jpg'))
     texture_png=list(path.glob('*.png'))
     texture_list=texture_jpg+texture_png
-    l=random.choice(texture_list)
+    l=sky_rng.choice(texture_list)
     blank_texture1=Texture(l)
     sky=Sky(texture=blank_texture1)
     return sky
 
 
-def create_planets(positions):
+def create_planets(positions,seed):
     visual_planet=[]
     path=Path('textures/planets')
     texture_jpg=list(path.glob('*.jpg'))
     texture_png=list(path.glob('*.png'))
     texture_list=texture_jpg+texture_png
-    
+    planet_rng=random.Random(seed) 
     for i in positions:
-                
-        l=random.choice(texture_list)
+            
+        l=planet_rng.choice(texture_list)
         blank_texture=Texture(l)
         visual_planet.append(Entity(model='sphere',color=color.white,scale=(system.planets[positions.index(i)].mass**0.27,system.planets[positions.index(i)].mass**0.27,system.planets[positions.index(i)].mass**0.27),position=(i[0]*10,0,i[1]*10),texture=blank_texture))
         texture_list.remove(l)   
@@ -111,7 +116,6 @@ def create_orbits(system):
     for i in range(len(system.planets)):
         orbit.append(Entity(model=Circle(mode='line',resolution=100,radius=system.planets[i].orbital_distance*10),color=color.white,position=(0,0,0),rotation=(90,0,0)))
     return orbit
-
 
 
 
@@ -152,8 +156,8 @@ def input(key):
         star=create_main_star(system)
         orbits=create_orbits(system)
         positions=current_position(system,simulation_elapsed)
-        visual_planet=create_planets(positions)
-        sky=create_sky()
+        visual_planet=create_planets(positions,seed)
+        sky=create_sky(seed)
         destroy(text)
         text=Text(text='PLANETARY SYSTEM\nSEED:{}\nSTAR MASS:{}\nPLANET COUNT:{}'.format(seed,system.star.mass,len(system.planets)),position=window.top_left)
 
