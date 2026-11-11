@@ -19,7 +19,7 @@ The project is a simplified educational visualization. It uses a few astronomy-i
 ### Requirements
 
 - Windows, macOS, or Linux desktop with a graphics-capable display.
-- Python 3.10 or newer. The local project environment records Python 3.14.7.
+- Python 3.12 or newer. The local project environment records Python 3.14.7.
 - Ursina 8.3.0. Installing Ursina also installs its runtime dependencies, including Panda3D and Pillow.
 - The complete `textures` directory. The application loads images through paths relative to the project folder.
 
@@ -36,11 +36,11 @@ py -3.14 -m venv .venv
 .\.venv\Scripts\python.exe main.py
 ```
 
-If the Python launcher does not recognize `-3.14`, install Python 3.14 first or use another installed Python 3 version that meets Ursina's requirements, and substitute that version in the virtual-environment command.
+If the Python launcher does not recognize `-3.14`, install Python 3.14 first or use another installed Python version that is 3.12 or newer, and substitute that version in the virtual-environment command.
 
 ### macOS or Linux setup
 
-Open a terminal in the project folder and run:
+Open a terminal in the project folder, confirm `python3 --version` reports Python 3.12 or newer, then run:
 
 ```bash
 python3 -m venv .venv
